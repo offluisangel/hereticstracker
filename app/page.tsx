@@ -7,6 +7,20 @@ export const metadata: Metadata = {
   title: "Team Heretics | Match tracker",
   description:
     "Resultados y próximos partidos de Team Heretics en League of Legends (LEC y LES), Valorant (VCT EMEA) y Call of Duty (CDL + EWC).",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Team Heretics | Match tracker",
+    description:
+      "Resultados y próximos partidos de Team Heretics en League of Legends (LEC y LES), Valorant (VCT EMEA) y Call of Duty (CDL + EWC).",
+    url: "/",
+    images: [{ url: "/og/og-default.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    title: "Team Heretics | Match tracker",
+    description:
+      "Resultados y próximos partidos de Team Heretics en League of Legends (LEC y LES), Valorant (VCT EMEA) y Call of Duty (CDL + EWC).",
+    images: ["/og/og-default.png"],
+  },
 }
 
 const competitions = [
