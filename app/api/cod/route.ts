@@ -95,9 +95,10 @@ async function scrapeTeamMatches(
         const opponentLink = teamLike
           .filter((anchor) => normalizeName(anchor.text) !== ownName && !normalizeName(extractTeamFromHref(anchor.href)).includes("heretics"))
           .pop()
-const opponent = resolveDisplayName(league, opponentLink?.text.trim() || "")
+const rawOpponent = opponentLink?.text.trim() || ""
+        const opponent = resolveDisplayName(league, rawOpponent)
         if (!opponent) continue
-        const opponentLogoUrl = resolveLogoUrl(league, opponent)
+        const opponentLogoUrl = resolveLogoUrl(league, rawOpponent)
 
         const cells = row.querySelectorAll("td")
         const tournament = cells[3]?.text.trim()

@@ -163,9 +163,10 @@ async function scrapeTeamMatches(
           )
           .pop()
 
-        const opponent = opponentByLink?.text.trim() ? resolveDisplayName(league, opponentByLink.text.trim()) : ""
+        const rawOpponent = opponentByLink?.text.trim() ?? ""
+        const opponent = rawOpponent ? resolveDisplayName(league, rawOpponent) : ""
         if (!opponent || isSameTeam(opponent, teamName, teamSlug)) continue
-        const opponentLogoUrl = resolveLogoUrl(league, opponent)
+        const opponentLogoUrl = resolveLogoUrl(league, rawOpponent)
 
         // Fallback de torneo: celda anterior a la de score suele ser el evento
         const cells = row.querySelectorAll("td")
