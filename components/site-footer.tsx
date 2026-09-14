@@ -5,7 +5,7 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="site-footer-inner">
         <div>
-          <Link href="/" className="footer-brand">Heretics <span>Tracker</span></Link>
+          <span className="footer-brand">Heretics <span>Tracker</span></span>
         </div>
         <div className="footer-meta">
           <a
