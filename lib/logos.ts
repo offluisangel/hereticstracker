@@ -6,10 +6,6 @@ interface TeamRecord {
   displayName?: string
 }
 
-// Alias normalizados (lowercase, sin caracteres especiales) que usa Liquipedia/VLR/LES
-// para reconocer a cada equipo. Suele incluir el nombre completo ("g2esports") y
-// las siglas ("g2"), porque el key del mapa es un id corto y no siempre coincide
-// con lo que devuelve la fuente.
 const TEAMS: Record<LeagueKey, Record<string, TeamRecord>> = {
   lec: {
     fnatic: { aliases: ["fn", "fnc", "fnatic"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/Fnatic.webp?v=1786482647551", displayName: "Fnatic" },
@@ -31,20 +27,19 @@ const TEAMS: Record<LeagueKey, Record<string, TeamRecord>> = {
     giant: { aliases: ["gx", "giantx"], logo: "https://static.lesesports.es/teams/SPLIT3-2026/GX.png", displayName: "GIANTX ITERO" },
     lua: { aliases: ["lua"], logo: "https://static.lesesports.es/teams/SPLIT3-2026/LUA.png", displayName: "LUA GAMING" },
     falke: { aliases: ["flk", "falke"], logo: "https://static.lesesports.es/teams/SPLIT3-2026/FLK.png", displayName: "FALKE ESPORTS" },
-    ub: { aliases: ["ub", "udb"], logo: "https://static.lesesports.es/teams/SPLIT3-2026/UB.png", displayName: "UNIVERSITAT DE BARCELONA" },
+    ub: { aliases: ["ub", "udb", "universitatdebarcelona"], logo: "https://static.lesesports.es/teams/SPLIT3-2026/UB.png", displayName: "UNIVERSITAT DE BARCELONA" },
   },
   vct: {
-    bbl: { aliases: ["bbl", "bblesports"], logo: "https://owcdn.net/img/65b8ccef5e273.png" },
+    bbl: { aliases: ["bbl", "bblesports"], logo: "https://cdn.escharts.com/uploads/public/63f/d2b/e9b/63fd2be9b247f903859611.png" },
     kc: { aliases: ["kc", "karminecorp"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/Karmine%20Corp.webp?v=1786482830243" },
     vitality: { aliases: ["vit", "vitality", "teamvitality"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/Team%20Vitality.webp?v=1786482891937" },
     navi: { aliases: ["navi", "natusvincere", "nv"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/Natus%20Vincere.webp?v=1786483077131" },
     fnatic: { aliases: ["fn", "fnc", "fnatic"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/Fnatic.webp?v=1786482647551" },
     heretics: { aliases: ["th", "heretics", "teamheretics"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/Team%20Heretics.webp?v=1786482993764" },
-    teamliquid: { aliases: ["tl", "teamliquid", "liquid"], logo: "https://owcdn.net/img/640c38262824c.png" },
+    teamliquid: { aliases: ["tl", "teamliquid", "liquid"], logo: "https://cdn.prod.website-files.com/64bf6e8cda9043babe7ca006/65f44cd149e66e386d8d3da7_Crest-on-light.svg" },
     giant: { aliases: ["gx", "giantx"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/GIANTX.webp?v=1786482768991" },
-    fut: { aliases: ["fut", "futesports"], logo: "https://owcdn.net/img/632be99c96c64.png" },
-    eternalfire: { aliases: ["ef", "eternalfire", "eternal"], logo: "https://owcdn.net/img/6628980dcdaea.png" },
-    gentlemates: { aliases: ["gm", "gentlemates"], logo: "https://owcdn.net/img/66701546055dd.png" },
+    fut: { aliases: ["fut", "futesports"], logo: "https://upload.wikimedia.org/wikipedia/az/a/a2/FUT_Esports_logo.png?utm_source=az.wikipedia.org&utm_campaign=index&utm_content=original" },
+    gentlemates: { aliases: ["gm", "gentlemates"], logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Paris_Gentle_Mates_logo.svg/960px-Paris_Gentle_Mates_logo.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20251204163540" },
   },
   cdl: {
     ravens: { aliases: ["ravens", "car", "carolinaroyalravens"], logo: "https://images.blz-contentstack.com/v3/assets/blta7b34f1f894a2422/bltc1ddba2549587194/64f74317af49494ad8926c37/ravens-icon-color.svg?auto=webp", displayName: "Carolina Royal Ravens" },
@@ -84,12 +79,14 @@ function findTeam(league: LeagueKey, rawName: string): TeamMatch | undefined {
       return { id, ...record }
     }
   }
+  let best: { id: string; record: TeamRecord; alias: string } | undefined
   for (const [id, record] of Object.entries(teams)) {
-    if (record.aliases.some((alias) => key.includes(alias))) {
-      return { id, ...record }
+    const match = record.aliases.find((alias) => key.includes(alias))
+    if (match && (!best || match.length > best.alias.length)) {
+      best = { id, record, alias: match }
     }
   }
-  return undefined
+  return best ? { id: best.id, ...best.record } : undefined
 }
 
 export const resolveLogoUrl = (league: LeagueKey, opponentName: string): string | undefined =>
