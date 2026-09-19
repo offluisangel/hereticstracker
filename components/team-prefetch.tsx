@@ -5,6 +5,7 @@ import { getLolMatches } from "@/lib/lol"
 import { getValorantMatches } from "@/lib/valorant"
 import { getCodMatches } from "@/lib/cod"
 import { getBrawlStarsMatches } from "@/lib/brawlstars"
+import { getR6SMatches } from "@/lib/r6s"
 
 export function TeamPrefetch() {
   useEffect(() => {
@@ -12,6 +13,7 @@ export function TeamPrefetch() {
     void getValorantMatches()
     void getCodMatches()
     void getBrawlStarsMatches()
+    void getR6SMatches()
   }, [])
 
   return null

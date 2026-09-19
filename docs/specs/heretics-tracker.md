@@ -3,23 +3,24 @@
 > **Estado:** `implementando`
 > **Autor:** Luis Angel
 > **Fecha:** 2026-09-08
-> **Última actualización:** 2026-09-12
+> **Última actualización:** 2026-09-18
 
 ## Contexto
 
-El tracker muestra los próximos partidos y resultados recientes de Team Heretics por juego. Cubre cinco competiciones:
+El tracker muestra los próximos partidos y resultados recientes de Team Heretics por juego. Cubre seis competiciones:
 
 - **League of Legends** — LEC (Team Heretics) y LES (Los Heretics / Heretics Academy).
 - **Valorant** — VCT EMEA.
 - **Call of Duty** — CDL (Miami Heretics) y eventos como EWC (Team Heretics).
 - **Brawl Stars** — BSL/BSC (Team Heretics).
+- **Rainbow Six Siege** — competiciones de R6S (Team Heretics).
 
 La estructura permite añadir equipos/juegos sin tocar la UI de las páginas existentes.
 
 ### Arquitectura de páginas
 
 - `/` — landing con la identidad del club y un grid de cards por competición.
-- `/lol/lec`, `/lol/les`, `/valorant`, `/cod`, `/brawlstars` — páginas de equipo, todas con el mismo componente compartido `TeamTracker`.
+- `/lol/lec`, `/lol/les`, `/valorant`, `/cod`, `/brawlstars`, `/r6s` — páginas de equipo, todas con el mismo componente compartido `TeamTracker`.
 - Navbar global con menú móvil y footer.
 
 ### Estado actual
@@ -29,7 +30,7 @@ La estructura permite añadir equipos/juegos sin tocar la UI de las páginas exi
 - Todo el código vive en este repo; no hay componentes ni configuraciones externas.
 - Se scrapea server-side porque no existe API oficial:
   - **VLR.gg** para Valorant (`app/api/valorant/route.ts`).
-  - **Liquipedia** para LoL, CoD y Brawl Stars (`app/api/lol/route.ts`, `app/api/cod/route.ts`, `app/api/brawlstars/route.ts`).
+  - **Liquipedia** para LoL, CoD, Brawl Stars y Rainbow Six Siege (`app/api/lol/route.ts`, `app/api/cod/route.ts`, `app/api/brawlstars/route.ts`, `app/api/rainbowsix/route.ts`).
 - Identidad visual oscura/dorada de Team Heretics con acentos por juego (ver SDD de UI).
 
 ### Restricciones
@@ -46,7 +47,7 @@ La estructura permite añadir equipos/juegos sin tocar la UI de las páginas exi
 
 - Servir una landing `/` con la identidad del club y cards de las competiciones que enlazan a cada página de equipo.
 - Exponer páginas por equipo con "Próximos partidos" (3) y "Resultados recientes" (10) por juego, con marcador, badge de Victoria/Derrota y logo del rival.
-- Exponer `/api/valorant`, `/api/lol`, `/api/cod` y `/api/brawlstars` (Node) que devuelven los partidos de Heretics normalizados, con caché y rate limit.
+- Exponer `/api/valorant`, `/api/lol`, `/api/cod`, `/api/brawlstars` y `/api/rainbowsix` (Node) que devuelven los partidos de Heretics normalizados, con caché y rate limit.
 - Mantener los datos y selectores de scraping centralizados para facilitar el mantenimiento.
 - Añadir un juego nuevo = crear un endpoint + configurar `TeamTracker`; las páginas comparten componente.
 
@@ -63,7 +64,7 @@ La estructura permite añadir equipos/juegos sin tocar la UI de las páginas exi
 
 ### Scraping Node/TS en los endpoints
 
-- **Elección:** Valorant, LoL, CoD y Brawl Stars se scrapean desde Route Handlers Node con `fetch` + `node-html-parser`.
+- **Elección:** Valorant, LoL, CoD, Brawl Stars y Rainbow Six Siege se scrapean desde Route Handlers Node con `fetch` + `node-html-parser`.
 - **Motivo:** es la única vía fiable sin APIs oficiales y mantiene un único runtime en el proyecto.
 
 ### Selectores centralizados
@@ -80,12 +81,12 @@ La estructura permite añadir equipos/juegos sin tocar la UI de las páginas exi
 ### Páginas de equipo compartidas
 
 - **Elección:** un solo componente `TeamTracker` recibe un `team` y usa un `config` (juego, liga, título, descripción, logo, loader y acento).
-- **Motivo:** las cinco páginas tienen el mismo contrato y se diferencian solo por configuración.
+- **Motivo:** las seis páginas tienen el mismo contrato y se diferencian solo por configuración.
 - **Datos:** cada página normaliza los partidos de su endpoint a `TrackerMatch` (`id`, `opponent`, `opponentLogoUrl?`, `tournament`, `date`, `score`, `result: "W" | "L" | "-"`).
 
 ### Logos y nombres de rivales centralizados
 
-- **Elección:** `lib/logos.ts` resuelve logo y display name del rival por liga (`lec`, `les`, `vct`, `cdl`, `brawl`) usando alias normalizados.
+- **Elección:** `lib/logos.ts` resuelve logo y display name del rival por liga (`lec`, `les`, `vct`, `cdl`, `brawl`, `r6s`) usando alias normalizados.
 - **Motivo:** una sola fuente de verdad para identificar a los rivales que devuelven Liquipedia/VLR/LES.
 
 ### Cache
@@ -101,7 +102,7 @@ La estructura permite añadir equipos/juegos sin tocar la UI de las páginas exi
 
 ### Identidad visual Heretics y acentos por juego
 
-- **Elección:** tema oscuro (negro/carbón) con dorado institucional, texto crema, y acento por juego: azul (LoL), rosa (Valorant), naranja (CoD), rojo (Brawl Stars).
+- **Elección:** tema oscuro (negro/carbón) con dorado institucional, texto crema, y acento por juego: azul (LoL), rosa (Valorant), naranja (CoD), rojo (Brawl Stars) y rojo intenso (R6S).
 - **Motivo:** fidelidad con la marca y discriminación visual de cada competición.
 - **Detalle:** ver SDD `team-tracker-ui.md`.
 
@@ -130,17 +131,17 @@ La estructura permite añadir equipos/juegos sin tocar la UI de las páginas exi
 [Navbar global / footer] + app/template.tsx (PageTransition)
         │
         ├── /  → TeamHeader + competition-grid (CompetitionCard × 5)
-        └── /lol/lec | /lol/les | /valorant | /cod | /brawlstars  → TeamTracker(team)
-                └── fetchApiJson → /api/{valorant,lol,cod,brawlstars} (Route Handler Node)
+        └── /lol/lec | /lol/les | /valorant | /cod | /brawlstars | /r6s  → TeamTracker(team)
+          └── fetchApiJson → /api/{valorant,lol,cod,brawlstars,rainbowsix} (Route Handler Node)
                         ├── caché memoria (TTL 300 s) + dedupe in-flight
                         ├── rate limit por IP (Upstash o fallback)
                         ├── VLR.gg (valorant)
-                        └── Liquipedia (lol, cod, brawlstars)
+                        └── Liquipedia (lol, cod, brawlstars, rainbowsix)
 ```
 
 ### Datos
 
-Los endpoints devuelven formas por juego; `TeamTracker` las normaliza a `TrackerMatch` (con un normalizador genérico compartido por LoL, CoD y Brawl Stars). No existe un contrato común adicional: la UI solo consume `TrackerMatch`.
+Los endpoints devuelven formas por juego; `TeamTracker` las normaliza a `TrackerMatch` (con un normalizador genérico compartido por LoL, CoD, Brawl Stars y R6S). No existe un contrato común adicional: la UI solo consume `TrackerMatch`.
 
 ```ts
 // TrackerMatch (cliente, components/team-tracker.tsx)
@@ -161,14 +162,15 @@ interface TrackerMatch {
 |---------|-----|
 | `app/layout.tsx`, `app/template.tsx`, `app/globals.css` | Shell, transición de página y tema/design tokens |
 | `app/page.tsx` | Landing con cabecera del club y cards de competiciones |
-| `app/lol/lec`, `app/lol/les`, `app/valorant`, `app/cod`, `app/brawlstars` | Páginas de equipo (`TeamTracker`) |
+| `app/lol/lec`, `app/lol/les`, `app/valorant`, `app/cod`, `app/brawlstars`, `app/r6s` | Páginas de equipo (`TeamTracker`) |
 | `app/api/valorant/route.ts` | Scraper VLR.gg (Team Heretics) |
 | `app/api/lol/route.ts` | Scraper Liquipedia (Team_Heretics y Los_Heretics) |
 | `app/api/cod/route.ts` | Scraper Liquipedia (Miami_Heretics y Team_Heretics) |
 | `app/api/brawlstars/route.ts` | Scraper Liquipedia Brawl Stars (Team_Heretics) |
+| `app/api/rainbowsix/route.ts` | Scraper Liquipedia Rainbow Six Siege (Team_Heretics) |
 | `components/team-tracker.tsx`, `team-header.tsx`, `competition-card.tsx` | UI de páginas de equipo, cabeceras y cards |
 | `components/site-navbar.tsx`, `site-footer.tsx`, `page-transition.tsx` | Navegación, pie y animación de página |
-| `lib/valorant.ts`, `lib/lol.ts`, `lib/cod.ts`, `lib/brawlstars.ts` | Clientes de fetch por juego |
+| `lib/valorant.ts`, `lib/lol.ts`, `lib/cod.ts`, `lib/brawlstars.ts`, `lib/r6s.ts` | Clientes de fetch por juego |
 | `lib/api-cache.ts`, `lib/http-client.ts`, `lib/rate-limit.ts` | Infra: caché, cliente y rate limit |
 | `lib/logos.ts` | Resolución de logos y nombres de rivales por liga |
 
@@ -180,6 +182,7 @@ interface TrackerMatch {
 | LoL (`/api/lol`) | idem | 300 s | 30 req/min |
 | CoD (`/api/cod`) | idem | 300 s | 30 req/min |
 | Brawl Stars (`/api/brawlstars`) | idem | 300 s | 30 req/min |
+| Rainbow Six (`/api/rainbowsix`) | idem | 300 s | 30 req/min |
 
 ---
 
@@ -193,8 +196,9 @@ interface TrackerMatch {
 | GET | `/api/lol` | Liquipedia (scraping) | Node | 300 s |
 | GET | `/api/cod` | Liquipedia (scraping) | Node | 300 s |
 | GET | `/api/brawlstars` | Liquipedia (scraping) | Node | 300 s |
+| GET | `/api/rainbowsix` | Liquipedia (scraping) | Node | 300 s |
 
-Headers de respuesta en los cuatro: `Cache-Control: public, max-age=120, s-maxage=300, stale-while-revalidate=600`. En rate limit excedido: `429` + `Retry-After` + `X-RateLimit-*` (con `Cache-Control: no-store`).
+Headers de respuesta en los cinco: `Cache-Control: public, max-age=120, s-maxage=300, stale-while-revalidate=600`. En rate limit excedido: `429` + `Retry-After` + `X-RateLimit-*` (con `Cache-Control: no-store`).
 
 ### Tipos por juego (normalizados en el cliente)
 
@@ -208,7 +212,7 @@ interface ValorantMatch {
   score?: { team: number; opponent: number }
 }
 
-// lib/lol.ts, lib/cod.ts, lib/brawlstars.ts (shape común)
+// lib/lol.ts, lib/cod.ts, lib/brawlstars.ts, lib/r6s.ts (shape común)
 interface XMatch {
   id: string
   team: string
@@ -256,9 +260,9 @@ Sin base de datos. Caché en memoria del proceso (se pierde al reiniciar) + cach
 - [x] `pnpm build` compila y prerenderiza las 13 rutas.
 - [x] No quedan referencias a código, componentes ni rutas de proyectos ajenos.
 - [x] No quedan componentes legado (`competition-page.tsx` y `*-calendar.tsx` eliminados).
-- [x] `/api/valorant`, `/api/lol`, `/api/cod` y `/api/brawlstars` son Route Handlers Node con caché y rate limit.
-- [x] Los 4 endpoints devuelven el último partido jugado y los próximos con marcador cuando la fuente lo proporciona.
-- [x] La landing `/` muestra la identidad del club y las cards de las 5 competiciones.
+- [x] `/api/valorant`, `/api/lol`, `/api/cod`, `/api/brawlstars` y `/api/rainbowsix` son Route Handlers Node con caché y rate limit.
+- [x] Los 5 endpoints devuelven el último partido jugado y los próximos con marcador cuando la fuente lo proporciona.
+- [x] La landing `/` muestra la identidad del club y las cards de las 6 competiciones.
 - [x] Las páginas por equipo comparten `TeamTracker` y separan próximos (3) de recientes (10).
 - [x] Los logos de los rivales se resuelven desde `lib/logos.ts`.
 - [x] El favicon se sirve con URL `/logos/Team_Hereticslogo_220.ico`.
@@ -271,7 +275,7 @@ Sin base de datos. Caché en memoria del proceso (se pierde al reiniciar) + cach
 - `pnpm typecheck` pasa sin errores (verificado 2026-09-12).
 - `next dev` arranca y las rutas responden; validación manual en navegador durante las iteraciones de diseño.
 - `next build` compila (verificado en sesiones previas; pendiente re-verificación tras cambios de UI).
-- `/api/valorant`, `/api/lol`, `/api/cod` y `/api/brawlstars` devuelven JSON con la estructura esperada.
+- `/api/valorant`, `/api/lol`, `/api/cod`, `/api/brawlstars` y `/api/rainbowsix` devuelven JSON con la estructura esperada.
 
 ---
 
@@ -293,6 +297,7 @@ Sin base de datos. Caché en memoria del proceso (se pierde al reiniciar) + cach
 - [Scraper LoL (Node)](app/api/lol/route.ts)
 - [Scraper CoD (Node)](app/api/cod/route.ts)
 - [Scraper Brawl Stars (Node)](app/api/brawlstars/route.ts)
+- [Scraper Rainbow Six Siege (Node)](app/api/rainbowsix/route.ts)
 - [Logos de rivales](lib/logos.ts)
 - [Infra de caché](lib/api-cache.ts), [cliente HTTP](lib/http-client.ts), [rate limit](lib/rate-limit.ts)
 - [Tema y estilos](app/globals.css)

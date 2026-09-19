@@ -1,4 +1,4 @@
-export type LeagueKey = "lec" | "les" | "vct" | "cdl" | "brawl"
+export type LeagueKey = "lec" | "les" | "vct" | "cdl" | "brawl" | "r6s"
 
 interface TeamRecord {
   aliases: string[]
@@ -58,6 +58,17 @@ const TEAMS: Record<LeagueKey, Record<string, TeamRecord>> = {
   brawl: {
     navi: { aliases: ["navi", "nv", "natusvincere"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/Natus%20Vincere.webp?v=1786483077131", displayName: "Natus Vincere" },
     sk: { aliases: ["sk", "skgaming"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/SK%20Gaming.webp?v=1786482986591", displayName: "SK Gaming" },
+  },
+  r6s: {
+    twisted: { aliases: ["twisted", "twistedminds"], logo: "https://static-esports.ubisoft.com/esports-platform/common/teams/7b847bb6-c6cc-4bf3-8aa6-0d74e062e763.png", displayName: "Twisted Minds" },
+    virtus: { aliases: ["virtus", "virtuspro"], logo: "https://static-esports.ubisoft.com/esports-platform/common/teams/ce8ead28-4faa-4957-8ef4-9c6933b5b5e9.png?imwidth=64", displayName: "Virtus.pro" },
+    geekay: { aliases: ["geekay", "geekayesports"], logo: "https://geekayesports.netlify.app/images/icon.png", displayName: "Geekay Esports" },
+    falcons: { aliases: ["flcn", "ryd", "riyadhfalcons", "teamfalcons", "falcons", "riyadh"], logo: "https://images.blz-contentstack.com/v3/assets/blta7b34f1f894a2422/blt10cfdbbd775958c4/68c05db642e3074f5b293148/Riyadh_Falcons_Mark_Green_Icon_No_Crop.svg?auto=webp", displayName: "Team Falcons" },
+    shifters: { aliases: ["shft", "shifters"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/Shifters.webp?v=1786483053260", displayName: "Shifters" },
+    g2: { aliases: ["g2", "g2esports"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/G2%20Esports.webp?v=1786482652843", displayName: "G2" },
+    secret: { aliases: ["secret", "teamsecret"], logo: "https://static-esports.ubisoft.com/esports-platform/common/teams/1fd26ed7-3786-418e-ac38-2bd3dd194763.png?imwidth=64", displayName: "Team Secret" },
+    fnatic: { aliases: ["fn", "fnc", "fnatic"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/Fnatic.webp?v=1786482647551", displayName: "Fnatic" },
+    rebels: { aliases: ["rebels", "rebelsgaming"], logo: "https://static-esports.ubisoft.com/esports-platform/common/teams/a4c46266-e579-44e5-b019-42b894c93a87.png?imwidth=64", displayName: "Rebels Gaming" },
   },
 }
 

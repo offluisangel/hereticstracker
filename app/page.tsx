@@ -74,6 +74,16 @@ const competitions = [
     title: "Team Heretics BS",
     description: "Resultados y próximos partidos de Team Heretics en Brawl Stars.",
   },
+  {
+    href: "/r6s",
+    league: "Rainbow Six / R6S",
+    accent: "r6s" as const,
+    logoSrc: "/logos/r6slogo.png",
+    eyebrow: "Rainbow Six / R6S",
+    accentColor: "#F22E2E",
+    title: "Rainbow Six",
+    description: "Resultados y próximos partidos de Team Heretics en Rainbow Six.",
+  }
 ]
 
 export default function HomePage() {
