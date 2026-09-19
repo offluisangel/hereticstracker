@@ -6,6 +6,7 @@ import { getLolMatches } from "@/lib/lol"
 import { getValorantMatches, type ValorantMatch } from "@/lib/valorant"
 import { getCodMatches } from "@/lib/cod"
 import { getBrawlStarsMatches } from "@/lib/brawlstars"
+import { getR6SMatches } from "@/lib/r6s"
 
 type TrackerMatch = {
   id: string
@@ -51,6 +52,14 @@ const rowVariants: Variants = {
 const formatDate = (value: string) =>
   new Intl.DateTimeFormat("es-ES", { day: "2-digit", month: "short" }).format(new Date(value))
 
+const formatDateTime = (value: string) =>
+  new Intl.DateTimeFormat("es-ES", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value))
+
 const resultFor = (score?: { team: number; opponent: number }): TrackerMatch["result"] =>
   !score ? "-" : score.team > score.opponent ? "W" : "L"
 
@@ -86,6 +95,7 @@ const configs = {
   valorant: { game: "Valorant", league: "VCT EMEA", title: "Team Heretics Valorant", description: "Resultados y proximos partidos de Team Heretics en VCT EMEA.", logoSrc: "/logos/vctlogo.png", loader: async () => normalizeValorant(await getValorantMatches()) },
   cod: { game: "Call of Duty", league: "CDL / EWC", title: "Team Heretics CoD", description: "Resultados y proximos partidos de Team Heretics en Call of Duty.", logoSrc: "/logos/thcodlogo.jpg", loader: async () => normalizeList(await getCodMatches()) },
   brawlstars: { game: "Brawl Stars", league: "BSL / BSC", title: "Team Heretics Brawl Stars", description: "Resultados y proximos partidos de Team Heretics en Brawl Stars.", logoSrc: "/logos/bslogo.png", loader: async () => normalizeList(await getBrawlStarsMatches()) },
+  r6s: { game: "Rainbow Six Siege", league: "R6S", title: "Team Heretics R6S", description: "Resultados y proximos partidos de Team Heretics en Rainbow Six Siege.", logoSrc: "/logos/r6slogo.png", loader: async () => normalizeList(await getR6SMatches()) },
 } satisfies Record<string, TeamConfig>
 
 export function TeamTracker({ team }: { team: keyof typeof configs }) {
@@ -134,6 +144,11 @@ export function TeamTracker({ team }: { team: keyof typeof configs }) {
             initial="hidden"
             animate="show"
           >
+            <div className="upcoming-table-head" aria-hidden="true">
+              <span>Rival</span>
+              <span>Fecha y hora</span>
+              <span>Torneo</span>
+            </div>
             {upcoming.slice(0, 3).map((m) => (
               <MatchRow key={m.id} match={m} upcoming />
             ))}
@@ -189,6 +204,23 @@ function TrackerSection({ title, children }: { title: string; children: React.Re
 }
 
 function MatchRow({ match, upcoming }: { match: TrackerMatch; upcoming?: boolean }) {
+  if (upcoming) {
+    return (
+      <motion.div className="match-row upcoming-row" variants={rowVariants}>
+        <div className="opponent-cell">
+          {match.opponentLogoUrl && (
+            <div className="opponent-logo">
+              <img src={match.opponentLogoUrl} alt="" loading="lazy" />
+            </div>
+          )}
+          <strong>{match.opponent}</strong>
+        </div>
+        <time className="upcoming-date" dateTime={match.date}>{formatDateTime(match.date)}</time>
+        <div className="match-tournament">{match.tournament}</div>
+      </motion.div>
+    )
+  }
+
   return (
     <motion.div className="match-row" variants={rowVariants}>
       <div className="opponent-cell">
@@ -198,13 +230,12 @@ function MatchRow({ match, upcoming }: { match: TrackerMatch; upcoming?: boolean
           </div>
         )}
         <strong>
-          {upcoming ? "vs " : ""}
           {match.opponent}
         </strong>
       </div>
       <strong className="match-score">{match.score}</strong>
       <div className={`result result-${match.result.toLowerCase()}`}>
-        {upcoming ? "Proximo" : match.result === "W" ? "Victoria" : match.result === "L" ? "Derrota" : "-"}
+        {match.result === "W" ? "Victoria" : match.result === "L" ? "Derrota" : "-"}
       </div>
       <div className="match-tournament">{match.tournament}</div>
       <time>{formatDate(match.date)}</time>

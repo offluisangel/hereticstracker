@@ -339,12 +339,55 @@ a {
   overflow-x: auto;
 }
 
-.upcoming-list .match-row {
-  border-bottom: 1px solid var(--line);
+.upcoming-table-head,
+.upcoming-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.5fr) minmax(150px, 0.8fr) minmax(220px, 1.4fr);
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
 }
 
-.upcoming-list .match-row:last-child {
+.upcoming-table-head {
+  min-height: 38px;
+  color: var(--muted-dark);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--line);
+  background: var(--carbon);
+}
+
+.upcoming-row {
+  min-height: 57px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-1);
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.upcoming-row:hover {
+  background: var(--surface-2);
+}
+
+.upcoming-row:last-child {
   border-bottom: 0;
+}
+
+.upcoming-table-head > :nth-child(2),
+.upcoming-row > :nth-child(2) {
+  text-align: center;
+}
+
+.upcoming-list .upcoming-row > :nth-child(3) {
+  min-width: 0;
+  justify-self: start;
+  text-align: left;
+}
+
+.upcoming-date {
+  white-space: nowrap;
+  font-weight: 700;
 }
 
 .match-list {
@@ -356,8 +399,8 @@ a {
    MATCH TABLE
    ======================================== */
 
-.match-table-head,
-.match-row {
+.match-list .match-table-head,
+.match-list .match-row {
   display: grid;
   grid-template-columns:
     minmax(220px, 2fr)
@@ -546,12 +589,19 @@ a {
     white-space: normal;
   }
 
-  .match-table-head,
-  .match-row {
+  .match-list .match-table-head,
+  .match-list .match-row {
     grid-template-columns:
       minmax(0, 3fr)
       minmax(92px, auto)
       minmax(102px, auto);
+    gap: 8px;
+    padding: 0 10px;
+  }
+
+  .upcoming-table-head,
+  .upcoming-row {
+    grid-template-columns: minmax(0, 1.4fr) minmax(112px, auto) minmax(0, 1.3fr);
     gap: 8px;
     padding: 0 10px;
   }
@@ -563,6 +613,16 @@ a {
   }
 
   .match-row {
+    min-height: 50px;
+  }
+
+  .upcoming-table-head {
+    min-height: 32px;
+    font-size: 9px;
+    letter-spacing: 0.03em;
+  }
+
+  .upcoming-row {
     min-height: 50px;
   }
 

@@ -5,7 +5,7 @@ interface CompetitionCardProps {
   title: string
   description: string
   logoSrc: string
-  accent: "lol" | "valorant" | "cod" | "brawl"
+  accent: "lol" | "valorant" | "cod" | "brawl" | "r6s"
   league: string
 }
 
