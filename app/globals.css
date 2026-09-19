@@ -601,7 +601,7 @@ a {
 
   .upcoming-table-head,
   .upcoming-row {
-    grid-template-columns: minmax(0, 1.4fr) minmax(112px, auto) minmax(0, 1.3fr);
+    grid-template-columns: minmax(0, 1.4fr) minmax(112px, auto);
     gap: 8px;
     padding: 0 10px;
   }
@@ -624,6 +624,11 @@ a {
 
   .upcoming-row {
     min-height: 50px;
+  }
+
+  .upcoming-table-head > :nth-child(3),
+  .upcoming-row > :nth-child(3) {
+    display: none;
   }
 
   .match-table-head > :nth-child(4),

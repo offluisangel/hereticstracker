@@ -54,17 +54,28 @@ const fetchWithTimeout = async (url: string, timeoutMs: number) => {
 }
 
 function extractTimestamp(row: HTMLElement): number | null {
-  const timer = row.querySelector(".timer-object")
-  const ts = timer?.getAttribute("data-timestamp")
-  if (ts && ts !== "error" && /^\d+$/.test(ts)) {
-    return Number(ts)
+  const parseDateValue = (value: string | undefined) => {
+    if (!value || value === "error") return null
+    if (/^\d+$/.test(value)) {
+      const number = Number(value)
+      return number < 10_000_000_000 ? number : Math.floor(number / 1000)
+    }
+
+    const parsed = Date.parse(value)
+    return Number.isNaN(parsed) ? null : Math.floor(parsed / 1000)
   }
 
-  const firstCell = row.querySelectorAll("td")[0]
-  const sortVal = firstCell?.getAttribute("data-sort-value")
-  if (sortVal && /^\d+$/.test(sortVal)) {
-    return Number(sortVal)
+  const candidates = row.querySelectorAll(".timer-object, [data-timestamp], [data-sort-value], [datetime]")
+  for (const candidate of candidates) {
+    for (const attribute of ["data-timestamp", "data-timestamp-ms", "data-sort-value", "datetime", "data-date"]) {
+      const timestamp = parseDateValue(candidate.getAttribute(attribute))
+      if (timestamp) return timestamp
+    }
   }
+
+  const dateText = row.text.match(/\b\d{1,2}[\s/-]+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*[\s/-]+\d{4}\b/i)?.[0]
+  const timestamp = parseDateValue(dateText)
+  if (timestamp) return timestamp
 
   return null
 }
@@ -137,6 +148,47 @@ async function scrapeMatches(): Promise<BrawlStarsMatch[]> {
         tournament,
         startTime: start.toISOString(),
         ...(score ? { score } : {}),
+      })
+    } catch {
+      continue
+    }
+  }
+
+  for (const card of root.querySelectorAll(".match-info")) {
+    try {
+      const timestamp = extractTimestamp(card)
+      if (!timestamp) continue
+
+      const start = new Date(timestamp * 1000)
+      if (Number.isNaN(start.getTime())) continue
+
+      const links = card.querySelectorAll("a[href^='/brawlstars/']").map((anchor) => ({
+        text: anchor.getAttribute("title")?.trim() || anchor.text.trim(),
+        href: anchor.getAttribute("href") || "",
+      }))
+      const linkDepth = (href: string) => href.split("/").filter(Boolean).length
+      const rawOpponent = links
+        .filter((link) => link.text && linkDepth(link.href) === 2)
+        .map((link) => link.text)
+        .filter((name) => !isOwnTeam(name))
+        .pop()
+      if (!rawOpponent) continue
+
+      const opponent = rawOpponent
+      const opponentLogoUrl = resolveLogoUrl("brawl", rawOpponent)
+      const tournamentLink = links.find((link) => link.text && linkDepth(link.href) > 2)
+      const tournament = tournamentLink?.text || "Brawl Stars"
+      const id = `${TEAM_SLUG}-${timestamp}-${opponent}`
+      if (seen.has(id)) continue
+      seen.add(id)
+
+      matches.push({
+        id,
+        team: TEAM_NAME,
+        opponent,
+        ...(opponentLogoUrl ? { opponentLogoUrl } : {}),
+        tournament,
+        startTime: start.toISOString(),
       })
     } catch {
       continue
