@@ -19,11 +19,17 @@ interface LolMatch {
   }
 }
 
-// Selectores centralizados (estructura "table2" actual de Liquipedia).
+// Liquipedia usa dos estructuras distintas para partidos:
+//   - "table2" (historial) -> filas <tr>
+//   - "Upcoming Matches"   -> tarjetas .match-info
 const SELECTORS = {
   rows: "tr",
+  cards: ".match-info",
   timer: ".timer-object",
   teamLink: "a[href^='/leagueoflegends/']",
+  cardOpponentRow: ".match-info-opponent-row",
+  cardTournament: ".match-info-tournament-name",
+  cardScore: ".match-info-opponent-score",
 }
 
 const LIQUIPEDIA_BASE = "https://liquipedia.net/leagueoflegends"
@@ -35,6 +41,8 @@ const extractTeamFromHref = (href: string) => {
   const segment = base.split("/").filter(Boolean).pop() || ""
   return segment.replace(/_/g, " ")
 }
+
+const linkDepth = (href: string) => href.split("/").filter(Boolean).length
 
 const isSameTeam = (candidate: string, teamName: string, teamSlug: string) => {
   const n = normalizeName(candidate)
@@ -91,7 +99,6 @@ async function scrapeTeamMatches(
   try {
     let response = await fetchWithTimeout(apiUrl, 8000)
     if (!response.ok) {
-      // Retry breve por posibles timeouts/edge hiccups
       response = await fetchWithTimeout(apiUrl, 8000)
     }
 
@@ -135,16 +142,11 @@ async function scrapeTeamMatches(
           href: a.getAttribute("href") || "",
         }))
 
-        const linkDepth = (href: string) => href.split("/").filter(Boolean).length
-
-        // Torneo: link de varios niveles (p. ej. /leagueoflegends/LEC/2026/Summer/Regular)
         const tournamentAnchor = anchored.find(
           (a) => a.text && linkDepth(a.href) > 2
         )
         const tournamentFromLink = tournamentAnchor?.text || ""
 
-        // Oponente: enlace de un solo nivel a la página del equipo contrario.
-        // Se excluyen tier ("S-Tier_Tournaments") y "View match details".
         const teamLike = anchored.filter(
           (a) =>
             a.text &&
@@ -168,7 +170,6 @@ async function scrapeTeamMatches(
         if (!opponent || isSameTeam(opponent, teamName, teamSlug)) continue
         const opponentLogoUrl = resolveLogoUrl(league, rawOpponent)
 
-        // Fallback de torneo: celda anterior a la de score suele ser el evento
         const cells = row.querySelectorAll("td")
         const scoreValues = (cells[5]?.text || "")
           .trim()
@@ -189,6 +190,72 @@ async function scrapeTeamMatches(
           id: `${teamSlug}-${ts}-${opponent}`,
           team: teamName,
           opponent: opponent || extractTeamFromHref(opponentByLink?.href || "TBD"),
+          ...(opponentLogoUrl ? { opponentLogoUrl } : {}),
+          tournament,
+          startTime: start.toISOString(),
+          ...(score ? { score } : {}),
+        })
+      } catch {
+        continue
+      }
+    }
+
+    for (const card of root.querySelectorAll(SELECTORS.cards)) {
+      try {
+        const ts = card.querySelector(SELECTORS.timer)?.getAttribute("data-timestamp")
+        if (!ts) continue
+
+        const start = new Date(Number(ts) * 1000)
+        if (Number.isNaN(start.getTime())) continue
+
+        const rowNames = card
+          .querySelectorAll(SELECTORS.cardOpponentRow)
+          .map((row) => {
+            const anchor = row.querySelector(SELECTORS.teamLink) || row.querySelector(".name")
+            return anchor?.getAttribute("title")?.trim() || anchor?.text.trim() || ""
+          })
+          .filter(Boolean)
+
+        let rawOpponent = rowNames.filter((n) => !isSameTeam(n, teamName, teamSlug)).pop()
+
+        // Fallback
+        if (!rawOpponent) {
+          rawOpponent = card
+            .querySelectorAll(SELECTORS.teamLink)
+            .map((a) => ({
+              text: a.getAttribute("title")?.trim() || a.text.trim(),
+              href: a.getAttribute("href") || "",
+            }))
+            .filter((l) => l.text && linkDepth(l.href) === 2)
+            .map((l) => l.text)
+            .filter((n) => !isSameTeam(n, teamName, teamSlug))
+            .pop()
+        }
+        if (!rawOpponent) continue
+
+        const opponent = resolveDisplayName(league, rawOpponent)
+        if (!opponent || isSameTeam(opponent, teamName, teamSlug)) continue
+        const opponentLogoUrl = resolveLogoUrl(league, rawOpponent)
+
+        const tournament =
+          card.querySelector(SELECTORS.cardTournament)?.text.trim() ||
+          card
+            .querySelectorAll(SELECTORS.teamLink)
+            .find((a) => linkDepth(a.getAttribute("href") || "") > 2)
+            ?.getAttribute("title")
+            ?.trim() ||
+          ""
+
+        const scoreCells = card.querySelectorAll(SELECTORS.cardScore).map((el) => el.text.trim())
+        const score =
+          scoreCells.length === 2 && scoreCells.every((value) => /^\d+$/.test(value))
+            ? { team: Number(scoreCells[0]), opponent: Number(scoreCells[1]) }
+            : undefined
+
+        maybeAdd({
+          id: `${teamSlug}-${ts}-${opponent}`,
+          team: teamName,
+          opponent,
           ...(opponentLogoUrl ? { opponentLogoUrl } : {}),
           tournament,
           startTime: start.toISOString(),

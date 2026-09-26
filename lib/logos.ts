@@ -90,9 +90,10 @@ function findTeam(league: LeagueKey, rawName: string): TeamMatch | undefined {
       return { id, ...record }
     }
   }
+
   let best: { id: string; record: TeamRecord; alias: string } | undefined
   for (const [id, record] of Object.entries(teams)) {
-    const match = record.aliases.find((alias) => key.includes(alias))
+    const match = record.aliases.find((alias) => alias.length >= 2 && key.startsWith(alias))
     if (match && (!best || match.length > best.alias.length)) {
       best = { id, record, alias: match }
     }
