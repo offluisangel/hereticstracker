@@ -12,6 +12,7 @@ const links = [
   { href: "/cod", label: "CoD", accentColor: "#fb923c" },
   { href: "/r6s", label: "R6S", accentColor: "#F22E2E" },
   { href: "/brawlstars", label: "Brawl", accentColor: "#f87171" },
+  { href: "/rocketleague", label: "Rocket League", accentColor: "#38bdf8" },
 ]
 
 const brandClass = "font-black uppercase tracking-[-.06em] text-[var(--gold)]"

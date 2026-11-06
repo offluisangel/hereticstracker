@@ -73,6 +73,16 @@ const competitions = [
     accentColor: "#F22E2E",
     title: "Rainbow Six",
     description: "Resultados y próximos partidos de Team Heretics en Rainbow Six.",
+  },
+  {
+    href: "/rocketleague",
+    league: "Rocket League",
+    accent: "r6s" as const,
+    logoSrc: "/logos/rl-logo.png",
+    eyebrow: "Rocket League",
+    accentColor: "#38bdf8",
+    title: "Team Heretics RL",
+    description: "Resultados y próximos partidos de Team Heretics en Rocket League.",
   }
 ]
 

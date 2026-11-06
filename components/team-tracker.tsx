@@ -7,6 +7,7 @@ import { getValorantMatches, type ValorantMatch } from "@/lib/valorant"
 import { getCodMatches } from "@/lib/cod"
 import { getBrawlStarsMatches } from "@/lib/brawlstars"
 import { getR6SMatches } from "@/lib/r6s"
+import { getRocketLeagueMatches } from "@/lib/rocketleague"
 
 type TrackerMatch = {
   id: string
@@ -95,6 +96,7 @@ const configs = {
   cod: { game: "Call of Duty", league: "CDL / EWC", title: "Team Heretics CoD", description: "Resultados y proximos partidos de Team Heretics en Call of Duty.", logoSrc: "/logos/thcodlogo.jpg", loader: async () => normalizeList(await getCodMatches()) },
   brawlstars: { game: "Brawl Stars", league: "BSL / BSC", title: "Team Heretics Brawl Stars", description: "Resultados y proximos partidos de Team Heretics en Brawl Stars.", logoSrc: "/logos/bslogo.png", loader: async () => normalizeList(await getBrawlStarsMatches()) },
   r6s: { game: "Rainbow Six Siege", league: "R6S", title: "Team Heretics R6S", description: "Resultados y proximos partidos de Team Heretics en Rainbow Six Siege.", logoSrc: "/logos/r6slogo.png", loader: async () => normalizeList(await getR6SMatches()) },
+  rocketleague: { game: "Rocket League", league: "Rocket League", title: "Team Heretics Rocket League", description: "Resultados y próximos partidos de Team Heretics en Rocket League.", logoSrc: "/logos/rl-logo.png", loader: async () => normalizeList(await getRocketLeagueMatches()) },
 } satisfies Record<string, TeamConfig>
 
 export function TeamTracker({ team }: { team: keyof typeof configs }) {
