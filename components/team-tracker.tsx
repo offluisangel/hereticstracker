@@ -91,7 +91,6 @@ const normalizeValorant = (matches: ValorantMatch[]): TrackerMatch[] =>
 
 const configs = {
   lec: { game: "League of Legends", league: "LEC", title: "Team Heretics LEC", description: "Resultados y proximos partidos del roster de Team Heretics en la LEC.", logoSrc: "/logos/lollogo.png", loader: async () => normalizeList((await getLolMatches()).lec) },
-  les: { game: "League of Legends", league: "LES", title: "Team Heretics LES", description: "Resultados y proximos partidos del equipo de Team Heretics en la LES.", logoSrc: "/logos/lollogo.png", loader: async () => normalizeList((await getLolMatches()).losHeretics) },
   valorant: { game: "Valorant", league: "VCT EMEA", title: "Team Heretics Valorant", description: "Resultados y proximos partidos de Team Heretics en VCT EMEA.", logoSrc: "/logos/vctlogo.png", loader: async () => normalizeValorant(await getValorantMatches()) },
   cod: { game: "Call of Duty", league: "CDL / EWC", title: "Team Heretics CoD", description: "Resultados y proximos partidos de Team Heretics en Call of Duty.", logoSrc: "/logos/thcodlogo.jpg", loader: async () => normalizeList(await getCodMatches()) },
   brawlstars: { game: "Brawl Stars", league: "BSL / BSC", title: "Team Heretics Brawl Stars", description: "Resultados y proximos partidos de Team Heretics en Brawl Stars.", logoSrc: "/logos/bslogo.png", loader: async () => normalizeList(await getBrawlStarsMatches()) },

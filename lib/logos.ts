@@ -1,4 +1,4 @@
-export type LeagueKey = "lec" | "les" | "vct" | "cdl" | "brawl" | "r6s"
+export type LeagueKey = "lec" | "vct" | "cdl" | "brawl" | "r6s"
 
 interface TeamRecord {
   aliases: string[]
@@ -12,22 +12,12 @@ const TEAMS: Record<LeagueKey, Record<string, TeamRecord>> = {
     g2: { aliases: ["g2", "g2esports"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/G2%20Esports.webp?v=1786482652843", displayName: "G2" },
     giant: { aliases: ["gx", "giantx"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/GIANTX.webp?v=1786482768991", displayName: "Giantx" },
     kc: { aliases: ["kc", "karminecorp"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/Karmine%20Corp.webp?v=1786482830243", displayName: "Karmine Corp" },
-    koi: { aliases: ["koi", "movistarkoi", "movistarkoiesports"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/Movistar%20KOI.webp?v=1786482905989", displayName: "Movistar Koi" },
+    koi: { aliases: ["koi", "mkoi", "movistarkoiesports"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/Movistar%20KOI.webp?v=1786482905989", displayName: "Movistar Koi" },
     navi: { aliases: ["navi", "nv", "natusvincere"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/Natus%20Vincere.webp?v=1786483077131", displayName: "Natus Vincere" },
     sk: { aliases: ["sk", "skgaming"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/SK%20Gaming.webp?v=1786482986591", displayName: "SK Gaming" },
     shifters: { aliases: ["shft", "shifters"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/Shifters.webp?v=1786483053260", displayName: "Shifters" },
     heretics: { aliases: ["th", "heretics", "teamheretics"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/Team%20Heretics.webp?v=1786482993764", displayName: "Team Heretics" },
     vitality: { aliases: ["vit", "vitality", "teamvitality"], logo: "https://tabgg.sfo3.cdn.digitaloceanspaces.com/medias/teams-color/Team%20Vitality.webp?v=1786482891937", displayName: "Team Vitality" },
-  },
-  les: {
-    koi: { aliases: ["koi", "mkf", "movistarkoi", "movistarkoiesports"], logo: "https://static.lesesports.es/teams/SPLIT3-2026/MKF.png", displayName: "MOVISTAR KOI FENIX" },
-    ucam: { aliases: ["ucam", "ucamurcia"], logo: "https://static.lesesports.es/teams/SPLIT3-2026/UCAM.png", displayName: "UCAM ESPORTS" },
-    heretics: { aliases: ["hrts", "losheretics", "lh", "heretics", "teamheretics", "th"], logo: "https://static.lesesports.es/teams/SPLIT3-2026/HRTS.png", displayName: "HERETICS ACADEMY" },
-    barca: { aliases: ["bar", "barcelona", "fcbarcelona", "barca"], logo: "https://static.lesesports.es/teams/SPLIT3-2026/BAR.png", displayName: "BARCA ESPORTS" },
-    giant: { aliases: ["gx", "giantx"], logo: "https://static.lesesports.es/teams/SPLIT3-2026/GX.png", displayName: "GIANTX ITERO" },
-    lua: { aliases: ["lua"], logo: "https://static.lesesports.es/teams/SPLIT3-2026/LUA.png", displayName: "LUA GAMING" },
-    falke: { aliases: ["flk", "falke"], logo: "https://static.lesesports.es/teams/SPLIT3-2026/FLK.png", displayName: "FALKE ESPORTS" },
-    ub: { aliases: ["ub", "udb", "universitatdebarcelona"], logo: "https://static.lesesports.es/teams/SPLIT3-2026/UB.png", displayName: "UNIVERSITAT DE BARCELONA" },
   },
   vct: {
     bbl: { aliases: ["bbl", "bblesports"], logo: "https://cdn.escharts.com/uploads/public/63f/d2b/e9b/63fd2be9b247f903859611.png" },

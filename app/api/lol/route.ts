@@ -294,14 +294,9 @@ export async function GET(request: Request) {
 
   try {
     const data = await cachedByKey("lol:matches", CACHE_TTL_MS, async () => {
-      const [lecMatches, losHereticsMatches] = await Promise.all([
-        scrapeTeamMatches("Team_Heretics", "Team Heretics", "lec"),
-        scrapeTeamMatches("Los_Heretics", "Los Heretics", "les"),
-      ])
-      console.log(
-        `[LoL API] Obtenidos ${lecMatches.length} partidos LEC y ${losHereticsMatches.length} partidos Los Heretics`
-      )
-      return { lec: lecMatches, losHeretics: losHereticsMatches }
+      const lecMatches = await scrapeTeamMatches("Team_Heretics", "Team Heretics", "lec")
+      console.log(`[LoL API] Obtenidos ${lecMatches.length} partidos LEC`)
+      return { lec: lecMatches }
     })
 
     return NextResponse.json(data, {
@@ -311,6 +306,6 @@ export async function GET(request: Request) {
     })
   } catch (error) {
     console.error("[LoL API] Error en GET handler:", error)
-    return NextResponse.json({ lec: [], losHeretics: [] }, { status: 200 })
+    return NextResponse.json({ lec: [] }, { status: 200 })
   }
 }

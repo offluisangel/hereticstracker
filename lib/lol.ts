@@ -15,7 +15,6 @@ export interface LolMatch {
 
 export interface LolData {
   lec: LolMatch[]
-  losHeretics: LolMatch[]
 }
 
 export async function getLolMatches(): Promise<LolData> {
@@ -24,6 +23,6 @@ export async function getLolMatches(): Promise<LolData> {
     return data
   } catch (error) {
     console.error("Error fetching LoL matches:", error)
-    return { lec: [], losHeretics: [] }
+    return { lec: [] }
   }
 }
