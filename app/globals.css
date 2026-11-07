@@ -666,6 +666,7 @@ a {
 .competition-card--valorant { --accent: #f472b6; }
 .competition-card--cod { --accent: #fb923c; }
 .competition-card--brawl { --accent: #f87171; }
+.competition-card--rocketleague { --accent: #38bdf8; }
 .competition-card__body { position: relative; display: flex; align-items: center; gap: 16px; min-height: 80px; }
 .competition-card__copy { flex: 1; min-width: 0; }
 .competition-card h2 { margin: 0; color: var(--cream); font-size: clamp(22px, 2.3vw, 30px); font-weight: 900; letter-spacing: -.04em; text-transform: uppercase; }
@@ -686,6 +687,7 @@ a {
 .team-tracker--valorant { --team-accent: #f472b6; }
 .team-tracker--cod { --team-accent: #fb923c; }
 .team-tracker--brawlstars { --team-accent: #f87171; }
+.team-tracker--rocketleague { --team-accent: #38bdf8; }
 .team-tracker .eyebrow { color: var(--team-accent); }
 .team-tracker .team-mark { filter: drop-shadow(0 0 22px color-mix(in srgb, var(--team-accent) 28%, transparent)); }
 .team-tracker .section-heading span { background: linear-gradient(90deg, var(--team-accent), transparent); }
