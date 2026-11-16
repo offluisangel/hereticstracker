@@ -1,12 +1,9 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { motion, type Variants } from "framer-motion"
-import { getLolMatches } from "@/lib/lol"
-import { getValorantMatches, type ValorantMatch } from "@/lib/valorant"
-import { getCodMatches } from "@/lib/cod"
-import { getBrawlStarsMatches } from "@/lib/brawlstars"
-import { getR6SMatches } from "@/lib/r6s"
+import { motion, useReducedMotion, type Variants } from "framer-motion"
+import { fetchApiJson } from "@/lib/http-client"
+import type { ValorantMatch } from "@/lib/valorant"
 
 type TrackerMatch = {
   id: string
@@ -90,21 +87,31 @@ const normalizeValorant = (matches: ValorantMatch[]): TrackerMatch[] =>
   })
 
 const configs = {
-  lec: { game: "League of Legends", league: "LEC", title: "Team Heretics LEC", description: "Resultados y proximos partidos del roster de Team Heretics en la LEC.", logoSrc: "/logos/lollogo.png", loader: async () => normalizeList((await getLolMatches()).lec) },
-  valorant: { game: "Valorant", league: "VCT EMEA", title: "Team Heretics Valorant", description: "Resultados y proximos partidos de Team Heretics en VCT EMEA.", logoSrc: "/logos/vctlogo.png", loader: async () => normalizeValorant(await getValorantMatches()) },
-  cod: { game: "Call of Duty", league: "CDL / EWC", title: "Team Heretics CoD", description: "Resultados y proximos partidos de Team Heretics en Call of Duty.", logoSrc: "/logos/thcodlogo.jpg", loader: async () => normalizeList(await getCodMatches()) },
-  brawlstars: { game: "Brawl Stars", league: "BSL / BSC", title: "Team Heretics Brawl Stars", description: "Resultados y proximos partidos de Team Heretics en Brawl Stars.", logoSrc: "/logos/bslogo.png", loader: async () => normalizeList(await getBrawlStarsMatches()) },
-  r6s: { game: "Rainbow Six Siege", league: "R6S", title: "Team Heretics R6S", description: "Resultados y proximos partidos de Team Heretics en Rainbow Six Siege.", logoSrc: "/logos/r6slogo.png", loader: async () => normalizeList(await getR6SMatches()) },
+  lec: { game: "League of Legends", league: "LEC", title: "Team Heretics LEC", description: "Resultados y próximos partidos del roster de Team Heretics en la LEC.", logoSrc: "/logos/lollogo.png", loader: async () => normalizeList((await fetchApiJson<{ lec: SourceMatch[] }>("/api/lol")).lec) },
+  valorant: { game: "Valorant", league: "VCT EMEA", title: "Team Heretics Valorant", description: "Resultados y próximos partidos de Team Heretics en VCT EMEA.", logoSrc: "/logos/vctlogo.png", loader: async () => normalizeValorant(await fetchApiJson<ValorantMatch[]>("/api/valorant")) },
+  cod: { game: "Call of Duty", league: "CDL / EWC", title: "Team Heretics CoD", description: "Resultados y próximos partidos de Team Heretics en Call of Duty.", logoSrc: "/logos/thcodlogo.jpg", loader: async () => normalizeList(await fetchApiJson<SourceMatch[]>("/api/cod")) },
+  brawlstars: { game: "Brawl Stars", league: "BSL / BSC", title: "Team Heretics Brawl Stars", description: "Resultados y próximos partidos de Team Heretics en Brawl Stars.", logoSrc: "/logos/bslogo.png", loader: async () => normalizeList(await fetchApiJson<SourceMatch[]>("/api/brawlstars")) },
+  r6s: { game: "Rainbow Six Siege", league: "R6S", title: "Team Heretics R6S", description: "Resultados y próximos partidos de Team Heretics en Rainbow Six Siege.", logoSrc: "/logos/r6slogo.png", loader: async () => normalizeList(await fetchApiJson<SourceMatch[]>("/api/rainbowsix")) },
 } satisfies Record<string, TeamConfig>
 
 export function TeamTracker({ team }: { team: keyof typeof configs }) {
   const config = configs[team]
   const [matches, setMatches] = useState<TrackerMatch[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+  const [attempt, setAttempt] = useState(0)
+  const reduceMotion = useReducedMotion()
 
   useEffect(() => {
-    config.loader().then(setMatches).finally(() => setLoading(false))
-  }, [config])
+    let active = true
+    setLoading(true)
+    setError(false)
+    config.loader()
+      .then((data) => { if (active) setMatches(data) })
+      .catch(() => { if (active) setError(true) })
+      .finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
+  }, [config, attempt])
 
   const { upcoming, recent } = useMemo(() => {
     const now = Date.now()
@@ -122,10 +129,8 @@ export function TeamTracker({ team }: { team: keyof typeof configs }) {
     <main className={`tracker-shell team-tracker team-tracker--${team}`}>
       <header className="team-header">
         <div>
-          <span className="eyebrow">
-            {config.game} / {config.league}
-          </span>
           <h1>{config.title}</h1>
+          <p className="team-context">{config.game} / {config.league}</p>
           <p>{config.description}</p>
         </div>
         <span className="team-mark">
@@ -133,69 +138,63 @@ export function TeamTracker({ team }: { team: keyof typeof configs }) {
         </span>
       </header>
 
-      <TrackerSection title="Proximos partidos">
-        {loading ? (
-          <Empty text="Cargando partidos..." />
-        ) : upcoming.length ? (
-          <motion.div
-            className="upcoming-list"
-            variants={listVariants}
-            initial="hidden"
-            animate="show"
-          >
-            <div className="upcoming-table-head" aria-hidden="true">
-              <span>Rival</span>
-              <span>Fecha y hora</span>
-              <span>Torneo</span>
-            </div>
-            {upcoming.slice(0, 3).map((m) => (
-              <MatchRow key={m.id} match={m} upcoming />
-            ))}
-          </motion.div>
-        ) : (
-          <Empty text="No hay partidos proximos programados." />
-        )}
-      </TrackerSection>
+      {error ? (
+        <div className="tracker-error" role="alert">
+          <div>
+            <h2>No se pudieron cargar los partidos.</h2>
+            <p>Comprueba tu conexión y vuelve a intentarlo.</p>
+          </div>
+          <button type="button" onClick={() => setAttempt((value) => value + 1)}>Reintentar</button>
+        </div>
+      ) : (
+        <>
+          <TrackerSection title="Próximos partidos" loading={loading}>
+            {loading ? <Empty text="Cargando partidos..." /> : upcoming.length ? (
+              <div className="upcoming-list">
+                <table className="match-table upcoming-table">
+                  <caption className="sr-only">Próximos partidos de {config.title}</caption>
+                  <thead>
+                    <tr><th scope="col">Rival</th><th scope="col">Fecha y hora</th><th scope="col">Torneo</th></tr>
+                  </thead>
+                  <motion.tbody variants={listVariants} initial={reduceMotion ? false : "hidden"} animate="show">
+                    {upcoming.slice(0, 3).map((m) => <MatchRow key={m.id} match={m} upcoming />)}
+                  </motion.tbody>
+                </table>
+              </div>
+            ) : <Empty text="No hay partidos próximos programados." />}
+          </TrackerSection>
 
-      <TrackerSection title="Resultados recientes">
-        {loading ? (
-          <Empty text="Cargando resultados..." />
-        ) : recent.length ? (
-          <motion.div
-            className="match-list"
-            variants={listVariants}
-            initial="hidden"
-            animate="show"
-          >
-            <div className="match-table-head" aria-hidden="true">
-              <span>Rival</span>
-              <span>Marcador</span>
-              <span>Resultado</span>
-              <span>Torneo</span>
-              <span>Fecha</span>
-            </div>
-            {recent.slice(0, 10).map((m) => (
-              <MatchRow key={m.id} match={m} />
-            ))}
-          </motion.div>
-        ) : (
-          <Empty text="No hay resultados disponibles." />
-        )}
-      </TrackerSection>
+          <TrackerSection title="Resultados recientes" loading={loading}>
+            {loading ? <Empty text="Cargando resultados..." /> : recent.length ? (
+              <div className="match-list">
+                <table className="match-table recent-table">
+                  <caption className="sr-only">Resultados recientes de {config.title}</caption>
+                  <thead>
+                    <tr><th scope="col">Rival</th><th scope="col">Marcador</th><th scope="col">Resultado</th><th scope="col">Torneo</th><th scope="col">Fecha</th></tr>
+                  </thead>
+                  <motion.tbody variants={listVariants} initial={reduceMotion ? false : "hidden"} animate="show">
+                    {recent.slice(0, 10).map((m) => <MatchRow key={m.id} match={m} />)}
+                  </motion.tbody>
+                </table>
+              </div>
+            ) : <Empty text="No hay resultados disponibles." />}
+          </TrackerSection>
+        </>
+      )}
     </main>
   )
 }
 
 function Empty({ text }: { text: string }) {
-  return <div className="empty-match">{text}</div>
+  return <div className="empty-match" role="status">{text}</div>
 }
 
-function TrackerSection({ title, children }: { title: string; children: React.ReactNode }) {
+function TrackerSection({ title, children, loading }: { title: string; children: React.ReactNode; loading: boolean }) {
   return (
-    <section className="tracker-section">
+    <section className="tracker-section" aria-busy={loading}>
       <div className="section-heading">
         <h2>{title}</h2>
-        <span />
+        <span aria-hidden="true" />
       </div>
       {children}
     </section>
@@ -205,39 +204,43 @@ function TrackerSection({ title, children }: { title: string; children: React.Re
 function MatchRow({ match, upcoming }: { match: TrackerMatch; upcoming?: boolean }) {
   if (upcoming) {
     return (
-      <motion.div className="match-row upcoming-row" variants={rowVariants}>
-        <div className="opponent-cell">
+      <motion.tr className="match-row upcoming-row" variants={rowVariants}>
+        <td>
+          <div className="opponent-cell">
           {match.opponentLogoUrl && (
             <div className="opponent-logo">
               <img src={match.opponentLogoUrl} alt="" loading="lazy" />
             </div>
           )}
-          <strong>{match.opponent}</strong>
-        </div>
-        <time className="upcoming-date" dateTime={match.date}>{formatDateTime(match.date)}</time>
-        <div className="match-tournament">{match.tournament}</div>
-      </motion.div>
+            <strong>{match.opponent}</strong>
+          </div>
+        </td>
+        <td><time className="upcoming-date" dateTime={match.date}>{formatDateTime(match.date)}</time></td>
+        <td className="match-tournament">{match.tournament}</td>
+      </motion.tr>
     )
   }
 
   return (
-    <motion.div className="match-row" variants={rowVariants}>
-      <div className="opponent-cell">
+    <motion.tr className="match-row" variants={rowVariants}>
+      <td>
+        <div className="opponent-cell">
         {match.opponentLogoUrl && (
           <div className="opponent-logo">
             <img src={match.opponentLogoUrl} alt="" loading="lazy" />
           </div>
         )}
-        <strong>
-          {match.opponent}
-        </strong>
-      </div>
-      <strong className="match-score">{match.score}</strong>
-      <div className={`result result-${match.result.toLowerCase()}`}>
-        {match.result === "W" ? "Victoria" : match.result === "L" ? "Derrota" : "-"}
-      </div>
-      <div className="match-tournament">{match.tournament}</div>
-      <time>{formatDate(match.date)}</time>
-    </motion.div>
+          <strong>{match.opponent}</strong>
+        </div>
+      </td>
+      <td className="match-score">{match.score}</td>
+      <td>
+        <span className={`result result-${match.result.toLowerCase()}`}>
+          {match.result === "W" ? "Victoria" : match.result === "L" ? "Derrota" : "-"}
+        </span>
+      </td>
+      <td className="match-tournament">{match.tournament}</td>
+      <td><time dateTime={match.date}>{formatDate(match.date)}</time></td>
+    </motion.tr>
   )
 }

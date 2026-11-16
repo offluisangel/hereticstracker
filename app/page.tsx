@@ -78,7 +78,7 @@ const competitions = [
 
 export default function HomePage() {
   return (
-    <main className="tracker-shell">
+    <main className="tracker-shell home-shell">
       <TeamHeader
         eyebrow="Team Heretics / Match tracker"
         logoSrc="/logos/heretics.png"
