@@ -10,8 +10,8 @@ export function TeamHeader({ eyebrow, title, description, logoSrc, logoClassName
   return (
     <header className="team-header">
       <div>
-        <span className="eyebrow">{eyebrow}</span>
         <h1>{title}</h1>
+        <p className="team-context">{eyebrow}</p>
         {description ? <p>{description}</p> : null}
       </div>
       <span className={`team-mark ${logoClassName ?? ""}`} aria-hidden="true">

@@ -77,7 +77,7 @@ const competitions = [
   {
     href: "/rocketleague",
     league: "Rocket League",
-    accent: "r6s" as const,
+    accent: "rocketleague" as const,
     logoSrc: "/logos/rl-logo.png",
     eyebrow: "Rocket League",
     accentColor: "#38bdf8",
@@ -88,7 +88,7 @@ const competitions = [
 
 export default function HomePage() {
   return (
-    <main className="tracker-shell">
+    <main className="tracker-shell home-shell">
       <TeamHeader
         eyebrow="Team Heretics / Match tracker"
         logoSrc="/logos/heretics.png"
