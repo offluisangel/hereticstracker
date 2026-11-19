@@ -1,34 +1,27 @@
 import Link from "next/link"
-import { ArrowRight } from "lucide-react"
+import { ArrowUpRight } from "lucide-react"
 
 interface CompetitionCardProps {
   href: string
-  title: string
-  description: string
-  logoSrc: string
-  accent: "lol" | "valorant" | "cod" | "brawl" | "r6s"
+  game: string
+  team: string
   league: string
+  logoSrc: string
+  accent: string
 }
 
-export function CompetitionCard({
-  href,
-  title,
-  description,
-  logoSrc,
-  accent,
-  league,
-}: CompetitionCardProps) {
+export function CompetitionCard({ href, game, team, league, logoSrc, accent }: CompetitionCardProps) {
   return (
-    <Link href={href} className={`competition-card competition-card--${accent}`}>
-      <div className="competition-card__body">
-        <div className="competition-card__copy">
-          <h3>{title}</h3>
-          <span className="competition-card__league">{league}</span>
-          <p>{description}</p>
-        </div>
-        <img className="competition-card__logo" src={logoSrc} alt="" aria-hidden="true" />
+    <Link href={href} className={`competition-card accent--${accent}`}>
+      <span className="competition-card__mark">
+        <img className="competition-card__logo" src={logoSrc} alt="" width={44} height={44} />
+      </span>
+      <div className="competition-card__copy">
+        <h3>{game}</h3>
+        <p>{team}</p>
       </div>
-      <ArrowRight className="competition-card__arrow" size={18} aria-hidden="true" />
+      <span className="competition-card__league">{league}</span>
+      <ArrowUpRight className="competition-card__arrow" size={19} aria-hidden="true" />
     </Link>
   )
 }
