@@ -82,6 +82,7 @@ const configs = {
   cod: { game: "Call of Duty", league: "CDL / EWC", title: "Team Heretics CoD", description: "Resultados y próximos partidos de Team Heretics en Call of Duty.", logoSrc: "/logos/thcodlogo.jpg", loader: async () => normalizeList(await fetchApiJson<SourceMatch[]>(teamMatchUrls.cod)) },
   brawlstars: { game: "Brawl Stars", league: "BSL / BSC", title: "Team Heretics Brawl Stars", description: "Resultados y próximos partidos de Team Heretics en Brawl Stars.", logoSrc: "/logos/bslogo.png", loader: async () => normalizeList(await fetchApiJson<SourceMatch[]>(teamMatchUrls.brawlstars)) },
   r6s: { game: "Rainbow Six Siege", league: "R6S", title: "Team Heretics R6S", description: "Resultados y próximos partidos de Team Heretics en Rainbow Six Siege.", logoSrc: "/logos/r6slogo.png", loader: async () => normalizeList(await fetchApiJson<SourceMatch[]>(teamMatchUrls.r6s)) },
+  rocketleague: { game: "Rocket League", league: "Rocket League", title: "Team Heretics Rocket League", description: "Resultados y próximos partidos de Team Heretics en Rocket League.", logoSrc: "/logos/rl-logo.png", loader: async () => normalizeList(await fetchApiJson<SourceMatch[]>(teamMatchUrls.rocketleague)) },
 } satisfies Record<string, TeamConfig>
 
 export function TeamTracker({ team }: { team: keyof typeof configs }) {

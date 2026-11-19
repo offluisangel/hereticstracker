@@ -5,19 +5,19 @@ import { TeamHeader } from "@/components/team-header"
 export const metadata: Metadata = {
   title: "Team Heretics | Match tracker",
   description:
-    "Resultados y próximos partidos de Team Heretics en League of Legends, Valorant, Call of Duty, Brawl Stars y Rainbow Six Siege.",
+    "Resultados y próximos partidos de Team Heretics en League of Legends, Valorant, Call of Duty, Brawl Stars, Rainbow Six Siege y Rocket League.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "Team Heretics | Match tracker",
     description:
-      "Resultados y próximos partidos de Team Heretics en League of Legends, Valorant, Call of Duty, Brawl Stars y Rainbow Six Siege.",
+      "Resultados y próximos partidos de Team Heretics en League of Legends, Valorant, Call of Duty, Brawl Stars, Rainbow Six Siege y Rocket League.",
     url: "/",
     images: [{ url: "/og/og-default.png", width: 1200, height: 630 }],
   },
   twitter: {
     title: "Team Heretics | Match tracker",
     description:
-      "Resultados y próximos partidos de Team Heretics en League of Legends, Valorant, Call of Duty, Brawl Stars y Rainbow Six Siege.",
+      "Resultados y próximos partidos de Team Heretics en League of Legends, Valorant, Call of Duty, Brawl Stars, Rainbow Six Siege y Rocket League.",
     images: ["/og/og-default.png"],
   },
 }
@@ -28,6 +28,7 @@ const competitions = [
   { href: "/cod", game: "Call of Duty", team: "Miami Heretics", league: "CDL / EWC", accent: "cod", logoSrc: "/logos/cdllogo.png" },
   { href: "/brawlstars", game: "Brawl Stars", team: "Team Heretics BS", league: "BSL / BSC", accent: "brawlstars", logoSrc: "/logos/bslogo.png" },
   { href: "/r6s", game: "Rainbow Six Siege", team: "Team Heretics", league: "R6S", accent: "r6s", logoSrc: "/logos/r6slogo.png" },
+  { href: "/rocketleague", game: "Rocket League", team: "Team Heretics", league: "Rocket League", accent: "rocketleague", logoSrc: "/logos/rl-logo.png" },
 ]
 
 export default function HomePage() {

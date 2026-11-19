@@ -24,6 +24,7 @@
 .accent--cod { --accent: #fb923c; }
 .accent--brawlstars { --accent: #f87171; }
 .accent--r6s { --accent: #ff8888; }
+.accent--rocketleague { --accent: #38bdf8; }
 
 html {
   background: var(--paper);

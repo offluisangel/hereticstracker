@@ -4,6 +4,7 @@ export const teamMatchUrls = {
   cod: "/api/cod",
   brawlstars: "/api/brawlstars",
   r6s: "/api/rainbowsix",
+  rocketleague: "/api/rocketleague",
 } as const
 
 export const teamMatchEndpoints: ReadonlyMap<string, string> = new Map([
@@ -12,4 +13,5 @@ export const teamMatchEndpoints: ReadonlyMap<string, string> = new Map([
   ["/cod", teamMatchUrls.cod],
   ["/brawlstars", teamMatchUrls.brawlstars],
   ["/r6s", teamMatchUrls.r6s],
+  ["/rocketleague", teamMatchUrls.rocketleague],
 ])

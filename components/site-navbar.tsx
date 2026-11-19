@@ -13,6 +13,7 @@ const links = [
   { href: "/cod", label: "CoD" },
   { href: "/brawlstars", label: "Brawl Stars" },
   { href: "/r6s", label: "Rainbow Six" },
+  { href: "/rocketleague", label: "Rocket League" },
 ]
 
 export function SiteNavbar() {
