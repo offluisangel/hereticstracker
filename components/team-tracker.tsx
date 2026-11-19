@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { CalendarDays, CircleAlert, ClipboardList, LoaderCircle, RotateCw } from "lucide-react"
 import { TeamHeader } from "@/components/team-header"
 import { fetchApiJson } from "@/lib/http-client"
+import { teamMatchUrls } from "@/lib/team-match-endpoints"
 import type { ValorantMatch } from "@/lib/valorant"
 
 type TrackerMatch = {
@@ -76,11 +77,11 @@ const normalizeValorant = (matches: ValorantMatch[]): TrackerMatch[] =>
   })
 
 const configs = {
-  lec: { game: "League of Legends", league: "LEC", title: "Team Heretics LEC", description: "Resultados y próximos partidos del roster de Team Heretics en la LEC.", logoSrc: "/logos/lollogo.png", loader: async () => normalizeList((await fetchApiJson<{ lec: SourceMatch[] }>("/api/lol")).lec) },
-  valorant: { game: "Valorant", league: "VCT EMEA", title: "Team Heretics Valorant", description: "Resultados y próximos partidos de Team Heretics en VCT EMEA.", logoSrc: "/logos/vctlogo.png", loader: async () => normalizeValorant(await fetchApiJson<ValorantMatch[]>("/api/valorant")) },
-  cod: { game: "Call of Duty", league: "CDL / EWC", title: "Team Heretics CoD", description: "Resultados y próximos partidos de Team Heretics en Call of Duty.", logoSrc: "/logos/thcodlogo.jpg", loader: async () => normalizeList(await fetchApiJson<SourceMatch[]>("/api/cod")) },
-  brawlstars: { game: "Brawl Stars", league: "BSL / BSC", title: "Team Heretics Brawl Stars", description: "Resultados y próximos partidos de Team Heretics en Brawl Stars.", logoSrc: "/logos/bslogo.png", loader: async () => normalizeList(await fetchApiJson<SourceMatch[]>("/api/brawlstars")) },
-  r6s: { game: "Rainbow Six Siege", league: "R6S", title: "Team Heretics R6S", description: "Resultados y próximos partidos de Team Heretics en Rainbow Six Siege.", logoSrc: "/logos/r6slogo.png", loader: async () => normalizeList(await fetchApiJson<SourceMatch[]>("/api/rainbowsix")) },
+  lec: { game: "League of Legends", league: "LEC", title: "Team Heretics LEC", description: "Resultados y próximos partidos del roster de Team Heretics en la LEC.", logoSrc: "/logos/lollogo.png", loader: async () => normalizeList((await fetchApiJson<{ lec: SourceMatch[] }>(teamMatchUrls.lec)).lec) },
+  valorant: { game: "Valorant", league: "VCT EMEA", title: "Team Heretics Valorant", description: "Resultados y próximos partidos de Team Heretics en VCT EMEA.", logoSrc: "/logos/vctlogo.png", loader: async () => normalizeValorant(await fetchApiJson<ValorantMatch[]>(teamMatchUrls.valorant)) },
+  cod: { game: "Call of Duty", league: "CDL / EWC", title: "Team Heretics CoD", description: "Resultados y próximos partidos de Team Heretics en Call of Duty.", logoSrc: "/logos/thcodlogo.jpg", loader: async () => normalizeList(await fetchApiJson<SourceMatch[]>(teamMatchUrls.cod)) },
+  brawlstars: { game: "Brawl Stars", league: "BSL / BSC", title: "Team Heretics Brawl Stars", description: "Resultados y próximos partidos de Team Heretics en Brawl Stars.", logoSrc: "/logos/bslogo.png", loader: async () => normalizeList(await fetchApiJson<SourceMatch[]>(teamMatchUrls.brawlstars)) },
+  r6s: { game: "Rainbow Six Siege", league: "R6S", title: "Team Heretics R6S", description: "Resultados y próximos partidos de Team Heretics en Rainbow Six Siege.", logoSrc: "/logos/r6slogo.png", loader: async () => normalizeList(await fetchApiJson<SourceMatch[]>(teamMatchUrls.r6s)) },
 } satisfies Record<string, TeamConfig>
 
 export function TeamTracker({ team }: { team: keyof typeof configs }) {
