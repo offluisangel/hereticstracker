@@ -2,87 +2,81 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X } from "lucide-react"
-import { useState } from "react"
+import { Check, Menu, X } from "lucide-react"
+import { useRef, useState } from "react"
 
 const links = [
-  { href: "/", label: "Home" },
-  { href: "/lol/lec", label: "LEC", accentColor: "#60a5fa" },
-  { href: "/valorant", label: "Valorant", accentColor: "#f472b6" },
-  { href: "/cod", label: "CoD", accentColor: "#fb923c" },
-  { href: "/r6s", label: "R6S", accentColor: "#F22E2E" },
-  { href: "/brawlstars", label: "Brawl", accentColor: "#f87171" },
+  { href: "/", label: "Inicio" },
+  { href: "/lol/lec", label: "LEC" },
+  { href: "/valorant", label: "Valorant" },
+  { href: "/cod", label: "CoD" },
+  { href: "/brawlstars", label: "Brawl Stars" },
+  { href: "/r6s", label: "Rainbow Six" },
 ]
-
-const brandClass = "font-black uppercase tracking-[-.03em] text-[var(--gold)]"
-const activeClass = "text-[var(--gold)]"
-const inactiveClass = "text-[var(--muted)]"
 
 export function SiteNavbar() {
   const pathname = usePathname()
-  const [open, setOpen] = useState(false)
+  const [menuPath, setMenuPath] = useState<string | null>(null)
+  const toggle = useRef<HTMLButtonElement>(null)
+  const open = menuPath === pathname
+
+  const renderLinks = (mobile = false) => links.map(({ href, label }) => (
+    <li key={href}>
+      <Link
+        href={href}
+        aria-current={pathname === href ? "page" : undefined}
+        onClick={mobile ? () => {
+          if (href === pathname) toggle.current?.focus()
+          setMenuPath(null)
+        } : undefined}
+        className="navbar-link"
+      >
+        {label}
+        {mobile && pathname === href ? <Check size={16} aria-hidden="true" /> : null}
+      </Link>
+    </li>
+  ))
 
   return (
-    <header className="site-navbar">
-      <div className="mx-auto flex max-w-[1125px] items-center justify-between px-4 py-4">
-        <Link href="/" className={brandClass}>
-          Heretics <span className="text-[var(--gold-light)]">Tracker</span>
-        </Link>
-
-        <div className="navbar-actions">
-          <nav className="hidden gap-1 md:flex" aria-label="Navegación principal">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                aria-current={pathname === link.href ? "page" : undefined}
-                className={`px-3 py-2 text-[11px] font-bold uppercase tracking-wider ${pathname === link.href ? activeClass : inactiveClass}`}
-                onMouseEnter={(event) => {
-                  if (link.accentColor) event.currentTarget.style.color = link.accentColor
-                }}
-                onMouseLeave={(event) => {
-                  event.currentTarget.style.removeProperty("color")
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
+    <>
+      <a className="skip-link" href="#main-content">Ir al contenido</a>
+      <header
+        className="site-navbar"
+        onBlur={(event) => {
+          if (open && !event.currentTarget.contains(event.relatedTarget)) setMenuPath(null)
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape" && open) {
+            event.preventDefault()
+            setMenuPath(null)
+            toggle.current?.focus()
+          }
+        }}
+      >
+        <div className="navbar-inner">
+          <Link href="/" className="navbar-brand" onClick={() => setMenuPath(null)}>
+            <img src="/logos/heretics.png" alt="" width={30} height={30} />
+            <span>Heretics <strong>Tracker</strong></span>
+          </Link>
+          <nav className="navbar-desktop" aria-label="Navegación principal">
+            <ul>{renderLinks()}</ul>
           </nav>
-
           <button
+            ref={toggle}
             type="button"
-            className="flex items-center justify-center p-2 text-[var(--gold)] md:hidden"
+            className="navbar-toggle"
             aria-label={open ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={open}
             aria-controls="mobile-navigation"
-            onClick={() => setOpen(!open)}
+            onClick={() => setMenuPath(open ? null : pathname)}
           >
-            {open ? <X size={22} /> : <Menu size={22} />}
+            {open ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
           </button>
+          <nav id="mobile-navigation" aria-label="Navegación móvil" className="navbar-mobile" hidden={!open}>
+            <ul>{renderLinks(true)}</ul>
+          </nav>
         </div>
-      </div>
-
-      {open && (
-        <nav id="mobile-navigation" aria-label="Navegación móvil" className="flex flex-col gap-1 border-t border-[var(--line)] px-4 pb-4 pt-2 md:hidden">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              aria-current={pathname === link.href ? "page" : undefined}
-              onClick={() => setOpen(false)}
-              className={`px-3 py-3 text-xs font-bold uppercase ${pathname === link.href ? activeClass : "text-[var(--muted)]"}`}
-              onMouseEnter={(event) => {
-                if (link.accentColor) event.currentTarget.style.color = link.accentColor
-              }}
-              onMouseLeave={(event) => {
-                event.currentTarget.style.removeProperty("color")
-              }}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-      )}
-    </header>
+      </header>
+    </>
   )
 }

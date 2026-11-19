@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import { SiteNavbar } from "@/components/site-navbar"
 import { SiteFooter } from "@/components/site-footer"
-import { PageTransition } from "@/components/page-transition"
 import { SITE_URL } from "@/lib/site"
 
 const DEFAULT_DESCRIPTION = "Resultados y próximos partidos de Team Heretics."
@@ -40,10 +39,10 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: "#050505" }
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className="bg-[var(--black)]">
+    <html lang="es">
       <body className="site-body">
         <SiteNavbar />
-        <PageTransition>{children}</PageTransition>
+        {children}
         <SiteFooter />
       </body>
     </html>

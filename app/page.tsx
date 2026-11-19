@@ -1,103 +1,56 @@
 import type { Metadata } from "next"
 import { CompetitionCard } from "@/components/competition-card"
 import { TeamHeader } from "@/components/team-header"
-import { TeamPrefetch } from "@/components/team-prefetch"
 
 export const metadata: Metadata = {
   title: "Team Heretics | Match tracker",
   description:
-    "Resultados y próximos partidos de Team Heretics en League of Legends (LEC), Valorant (VCT EMEA) y Call of Duty (CDL + EWC).",
+    "Resultados y próximos partidos de Team Heretics en League of Legends, Valorant, Call of Duty, Brawl Stars y Rainbow Six Siege.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "Team Heretics | Match tracker",
     description:
-      "Resultados y próximos partidos de Team Heretics en League of Legends (LEC), Valorant (VCT EMEA) y Call of Duty (CDL + EWC).",
+      "Resultados y próximos partidos de Team Heretics en League of Legends, Valorant, Call of Duty, Brawl Stars y Rainbow Six Siege.",
     url: "/",
     images: [{ url: "/og/og-default.png", width: 1200, height: 630 }],
   },
   twitter: {
     title: "Team Heretics | Match tracker",
     description:
-      "Resultados y próximos partidos de Team Heretics en League of Legends (LEC), Valorant (VCT EMEA) y Call of Duty (CDL + EWC).",
+      "Resultados y próximos partidos de Team Heretics en League of Legends, Valorant, Call of Duty, Brawl Stars y Rainbow Six Siege.",
     images: ["/og/og-default.png"],
   },
 }
 
 const competitions = [
-  {
-    href: "/lol/lec",
-    league: "League of Legends / LEC",
-    accent: "lol" as const,
-    logoSrc: "/logos/lollogo.png",
-    eyebrow: "League of Legends / LEC",
-    accentColor: "#60a5fa",
-    title: "Team Heretics",
-    description: "Resultados y próximos partidos de Team Heretics en la LEC.",
-  },
-  {
-    href: "/valorant",
-    league: "Valorant / VCT EMEA",
-    accent: "valorant" as const,
-    logoSrc: "/logos/vctlogo.png",
-    eyebrow: "Valorant / VCT EMEA",
-    accentColor: "#f472b6",
-    title: "Heretics valorant",
-    description: "Resultados y próximos partidos de Team Heretics en VCT.",
-  },
-  {
-    href: "/cod",
-    league: "Call of Duty / CDL + EWC",
-    accent: "cod" as const,
-    logoSrc: "/logos/cdllogo.png",
-    eyebrow: "Call of Duty / CDL + EWC",
-    accentColor: "#fb923c",
-    title: "Miami Heretics",
-    description: "Resultados y próximos partidos de Team Heretics en Call of Duty.",
-  },
-  {
-    href: "/brawlstars",
-    league: "Brawl Stars / BSL + BSC",
-    accent: "brawl" as const,
-    logoSrc: "/logos/bslogo.png",
-    eyebrow: "Brawl Stars / BSL + BSC",
-    accentColor: "#f87171",
-    title: "Team Heretics BS",
-    description: "Resultados y próximos partidos de Team Heretics en Brawl Stars.",
-  },
-  {
-    href: "/r6s",
-    league: "Rainbow Six / R6S",
-    accent: "r6s" as const,
-    logoSrc: "/logos/r6slogo.png",
-    eyebrow: "Rainbow Six / R6S",
-    accentColor: "#F22E2E",
-    title: "Rainbow Six",
-    description: "Resultados y próximos partidos de Team Heretics en Rainbow Six.",
-  }
+  { href: "/lol/lec", game: "League of Legends", team: "Team Heretics", league: "LEC", accent: "lec", logoSrc: "/logos/lollogo.png" },
+  { href: "/valorant", game: "Valorant", team: "Team Heretics", league: "VCT EMEA", accent: "valorant", logoSrc: "/logos/vctlogo.png" },
+  { href: "/cod", game: "Call of Duty", team: "Miami Heretics", league: "CDL / EWC", accent: "cod", logoSrc: "/logos/cdllogo.png" },
+  { href: "/brawlstars", game: "Brawl Stars", team: "Team Heretics BS", league: "BSL / BSC", accent: "brawlstars", logoSrc: "/logos/bslogo.png" },
+  { href: "/r6s", game: "Rainbow Six Siege", team: "Team Heretics", league: "R6S", accent: "r6s", logoSrc: "/logos/r6slogo.png" },
 ]
 
 export default function HomePage() {
   return (
-    <main className="tracker-shell home-shell">
+    <main id="main-content" tabIndex={-1} className="tracker-shell home-shell">
       <TeamHeader
-        eyebrow="Team Heretics / Match tracker"
+        context="Team Heretics / Esports"
         logoSrc="/logos/heretics.png"
         logoClassName="home-mark"
         title="Resultados y próximos partidos"
       />
 
-      <section className="tracker-section">
+      <section className="tracker-section" aria-labelledby="competitions-title">
         <div className="section-heading">
-          <h2>Equipos &amp; competiciones</h2>
+          <h2 id="competitions-title">Equipos y competiciones</h2>
           <span aria-hidden="true" />
         </div>
-        <div className="competition-grid">
+        <ul className="competition-directory">
           {competitions.map((competition) => (
-            <CompetitionCard key={competition.href} {...competition} />
+            <li key={competition.href}><CompetitionCard {...competition} /></li>
           ))}
-        </div>
+        </ul>
       </section>
-      <TeamPrefetch />
     </main>
   )
 }
