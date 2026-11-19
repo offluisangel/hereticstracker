@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Check, Menu, X } from "lucide-react"
 import { useRef, useState } from "react"
+import { TeamLink } from "@/components/team-link"
 
 const links = [
   { href: "/", label: "Inicio" },
@@ -22,7 +23,7 @@ export function SiteNavbar() {
 
   const renderLinks = (mobile = false) => links.map(({ href, label }) => (
     <li key={href}>
-      <Link
+      <TeamLink
         href={href}
         aria-current={pathname === href ? "page" : undefined}
         onClick={mobile ? () => {
@@ -33,7 +34,7 @@ export function SiteNavbar() {
       >
         {label}
         {mobile && pathname === href ? <Check size={16} aria-hidden="true" /> : null}
-      </Link>
+      </TeamLink>
     </li>
   ))
 

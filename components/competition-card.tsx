@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { TeamLink } from "@/components/team-link"
 import { ArrowUpRight } from "lucide-react"
 
 interface CompetitionCardProps {
@@ -12,7 +12,7 @@ interface CompetitionCardProps {
 
 export function CompetitionCard({ href, game, team, league, logoSrc, accent }: CompetitionCardProps) {
   return (
-    <Link href={href} className={`competition-card accent--${accent}`}>
+    <TeamLink href={href} className={`competition-card accent--${accent}`}>
       <span className="competition-card__mark">
         <img className="competition-card__logo" src={logoSrc} alt="" width={44} height={44} />
       </span>
@@ -22,6 +22,6 @@ export function CompetitionCard({ href, game, team, league, logoSrc, accent }: C
       </div>
       <span className="competition-card__league">{league}</span>
       <ArrowUpRight className="competition-card__arrow" size={19} aria-hidden="true" />
-    </Link>
+    </TeamLink>
   )
 }
